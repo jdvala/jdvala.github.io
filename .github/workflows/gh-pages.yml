@@ -29,6 +29,6 @@ jobs:
           publish_dir: ./public
           #   keep_files: true
           user_name: jdvala
-          user_email: jay.vala@msn.com
+          user_email: 24193355+jdvala@users.noreply.github.com
           publish_branch: main
           cname: www.jayvala.in
