@@ -1,0 +1,375 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><title>Jay Vala</title><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="This is what happens when we club up multiple of something."><meta property="og:title" content="Multilayer Perceptron"><meta property="og:description" content="This is what happens when we club up multiple of something."><meta property="og:type" content="website"><meta property="og:url" content="https://jdvala.github.io/posts/2018-10-13-mnist-multilayer-perceptron/"><meta itemprop=name content="Multilayer Perceptron"><meta itemprop=description content="This is what happens when we club up multiple of something."><meta name=twitter:card content="summary"><meta name=twitter:title content="Multilayer Perceptron"><meta name=twitter:description content="This is what happens when we club up multiple of something."><link rel=apple-touch-icon sizes=180x180 href=apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=favicon-32.png><link rel=stylesheet href=https://jdvala.github.io/scss/style.min.d1aa507e320f63a9a89fb4d16c025955cea1564900de1060a4b2d7cabbabcdec.css></head><body><header><div class="header header-frame"><div><h1 class=header__title>Multilayer Perceptron</h1><div class=header__description>This is what happens when we club up multiple of something.</div></div><nav class=header-nav><ul class="header-nav-list header-nav-list--menu"><li class=header-nav-list__item><a class=header-nav-list__link href=/about/><span>About</span></a></li></ul><button class=header-nav-list__nav-btn>navigation</button></nav><button class=mb-header__menu-btn>
+<span class=mb-header__menu-btn-line></span>
+<span class=mb-header__menu-btn-line></span>
+<span class=mb-header__menu-btn-line></span></button></div><nav id=mobile-header-nav class=mb-header-nav><button class="mb-header-nav__close-btn flex-center"><svg class="mb-header-nav__svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg></button><div class=mb-header-nav__wrapper><div class=mb-header-nav__container><svg width="240" height="72" viewBox="0 0 240 72" class="mb-header-nav__title"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Tags</text></svg><ul class=mb-header-nav-list><li class=mb-header-nav-list__item><a class=mb-header-nav-list__link href=https://jdvala.github.io/tags/python/>python</a></li><li class=mb-header-nav-list__item><a class=mb-header-nav-list__link href=https://jdvala.github.io/tags/text/>text</a></li><li class=mb-header-nav-list__item><a class=mb-header-nav-list__link href=https://jdvala.github.io/tags/nlp/>nlp</a></li><li class=mb-header-nav-list__item><a class=mb-header-nav-list__link href=https://jdvala.github.io/tags/analysis/>analysis</a></li><li class=mb-header-nav-list__item><a class=mb-header-nav-list__link href=https://jdvala.github.io/tags/ai/>AI</a></li><li class=mb-header-nav-list__item><a class=mb-header-nav-list__link href=https://jdvala.github.io/tags/mlp/>MLP</a></li></ul></div><div class=mb-header-nav__container><svg width="240" height="72" viewBox="0 0 240 72" class="mb-header-nav__title"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Menu</text></svg><ul class=mb-header-nav-list><li class=mb-header-nav-list__item><a class=mb-header-nav-list__link href=/about/>About</a></li></ul></div></div></nav></header><div id=content><article class=post><div class=post-content><h1 id=introduction-to-deep-learning>Introduction to Deep Learning</h1><h2 id=assignment-1-multilayer-perceptron-mnist-dataset>Assignment 1: Multilayer Perceptron MNIST Dataset</h2><blockquote><p>NOTE: This Tutorial was done on <em>google colab</em> so it includes some google cloud helper functions.</p></blockquote><p>In this assignment we are going to build a very basic deep learning model called as multilayer perceptron. Also we are going to expriment on it a little bit as suggested on the course website.</p><h3 id=multilayer-perceptron>Multilayer Perceptron</h3><p>Multilayer perceptron is a type of feed forward network, it has minimum 3 layers(although we don&rsquo;t count input and output as layers) input layer, hidden layer and output layer. It uses <strong>backpropogation</strong>, a technique for superviesed learning, where in it calculates error between given input and the ouput produce by the network and propogates error backwards. This is very interseting concept but it is a topic for some other time. It uses <strong>non-linear</strong> activation function to introduce non-linearity because most of the real world data is non-linear in nature. You can learn more about them <a href=http://deeplearning.net/tutorial/mlp.html>here</a>.</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># importing libraries</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#555>tensorflow</span> <span style=color:#000;font-weight:700>as</span> <span style=color:#555>tf</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># uploading the data to the drive</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>from</span> <span style=color:#555>google.colab</span> <span style=color:#000;font-weight:700>import</span> files
+</span></span><span style=display:flex><span>files<span style=color:#000;font-weight:700>.</span>upload()
+</span></span></code></pre></div><pre><code>Saving t10k-images-idx3-ubyte.gz to t10k-images-idx3-ubyte.gz
+Saving t10k-labels-idx1-ubyte.gz to t10k-labels-idx1-ubyte.gz
+Saving train-images-idx3-ubyte.gz to train-images-idx3-ubyte.gz
+Saving train-labels-idx1-ubyte.gz to train-labels-idx1-ubyte.gz
+</code></pre><p>Once all the data has been loaded we need to convert this data into some machine readable format, for this on the course website there is a script called <em>conversion.py</em> which is given for this same purpose, I will stick to this method as it is suggested on the course website. However, this is one of the method to obtain the MNIST data, there are other eaiser methods which can be used. For example,</p><pre tabindex=0><code>from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data.read_data_sets(&#34;/tmp/data/&#34;, one_hot=True)
+</code></pre><p>This is the most simple one, but you can also download the ready made csv file from Kaggle website <a href=https://www.kaggle.com/c/digit-recognizer/data>here</a></p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># Uploading the conversion script</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>from</span> <span style=color:#555>google.colab</span> <span style=color:#000;font-weight:700>import</span> files
+</span></span><span style=display:flex><span>files<span style=color:#000;font-weight:700>.</span>upload()
+</span></span></code></pre></div><pre><code> &lt;input type=&quot;file&quot; id=&quot;files-43a260c5-fcc0-4b5e-8cfc-a08fc2ad3ecf&quot; name=&quot;files[]&quot; multiple disabled /&gt;
+ &lt;output id=&quot;result-43a260c5-fcc0-4b5e-8cfc-a08fc2ad3ecf&quot;&gt;
+  Upload widget is only available when the cell has been executed in the
+  current browser session. Please rerun this cell to enable.
+  &lt;/output&gt;
+  &lt;script src=&quot;/nbextensions/google.colab/files.js&quot;&gt;&lt;/script&gt; 
+
+
+Saving conversions.py to conversions.py
+</code></pre><p>Running this conversion file from here we can use the magic function of jupyter notebook and run them from herem, but before that we need to unpack these files to use them or to be able to covert them using the conversion script. So for that we are going to use <em>gzip</em> library which is inbuilt in the python library module. Lets do that</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># Iterating over the files in the folder, checking for &#39;.gz&#39; extinsion and then unpacking them and saving them</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#555>os</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#555>sys</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#555>gzip</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#555>shutil</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># Creating a new folder to save all the uncompressed files</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>dirToSave <span style=color:#000;font-weight:700>=</span> os<span style=color:#000;font-weight:700>.</span>path<span style=color:#000;font-weight:700>.</span>join(os<span style=color:#000;font-weight:700>.</span>getcwd(),<span style=color:#d14>&#39;data&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>try</span>:
+</span></span><span style=display:flex><span>    os<span style=color:#000;font-weight:700>.</span>stat(dirToSave)
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>except</span>:
+</span></span><span style=display:flex><span>    os<span style=color:#000;font-weight:700>.</span>mkdir(dirToSave)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>for</span> files <span style=color:#000;font-weight:700>in</span> os<span style=color:#000;font-weight:700>.</span>listdir():
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>if</span> files<span style=color:#000;font-weight:700>.</span>endswith(<span style=color:#d14>&#39;.gz&#39;</span>):
+</span></span><span style=display:flex><span>        fileName <span style=color:#000;font-weight:700>=</span> files<span style=color:#000;font-weight:700>.</span>split(<span style=color:#d14>&#39;.&#39;</span>)[<span style=color:#099>0</span>]
+</span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>with</span> gzip<span style=color:#000;font-weight:700>.</span>open(os<span style=color:#000;font-weight:700>.</span>path<span style=color:#000;font-weight:700>.</span>join(files), <span style=color:#d14>&#39;rb&#39;</span>) <span style=color:#000;font-weight:700>as</span> f_input, <span style=color:#0086b3>open</span>(os<span style=color:#000;font-weight:700>.</span>path<span style=color:#000;font-weight:700>.</span>join(dirToSave,fileName), <span style=color:#d14>&#39;wb&#39;</span>) <span style=color:#000;font-weight:700>as</span> f_output:
+</span></span><span style=display:flex><span>            shutil<span style=color:#000;font-weight:700>.</span>copyfileobj(f_input, f_output)
+</span></span></code></pre></div><p>Now that the folder for the data is created I will move the conversion file to the same folder and run the file to do its magic</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>!</span>ls
+</span></span></code></pre></div><pre><code>conversions.py	t10k-images-idx3-ubyte.gz   train-labels-idx1-ubyte.gz
+data		t10k-labels-idx1-ubyte.gz
+sample_data	train-images-idx3-ubyte.gz
+</code></pre><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>!</span>mv conversions<span style=color:#000;font-weight:700>.</span>py <span style=color:#000;font-weight:700>/</span>content<span style=color:#000;font-weight:700>/</span>data
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>!</span> cd data <span style=color:#000;font-weight:700>&amp;&amp;</span> ls <span style=color:#000;font-weight:700>&amp;&amp;</span> pwd
+</span></span></code></pre></div><pre><code>conversions.py		t10k-labels-idx1-ubyte	 train-labels-idx1-ubyte
+t10k-images-idx3-ubyte	train-images-idx3-ubyte
+/content/data
+</code></pre><p>Now lets run the conversion file</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>!</span>cd data<span style=color:#000;font-weight:700>/</span> <span style=color:#000;font-weight:700>&amp;&amp;</span> python3 conversions<span style=color:#000;font-weight:700>.</span>py <span style=color:#000;font-weight:700>-</span>c <span style=color:#000;font-weight:700>-</span>n
+</span></span></code></pre></div><pre><code>Converting to .csv...
+Training data...
+Test data...
+...Done.
+
+Converting to .npy...
+Training data...
+Test data...
+...Done.
+</code></pre><p>As the training and testing data csv files are created, lets examin them to see if they are actually there. I do this just to be sure</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>!</span> cd data<span style=color:#000;font-weight:700>/</span> <span style=color:#000;font-weight:700>&amp;&amp;</span> ls
+</span></span></code></pre></div><pre><code>conversions.py	     mnist_train.csv	     t10k-labels-idx1-ubyte
+mnist_test.csv	     mnist_train_imgs.npy    train-images-idx3-ubyte
+mnist_test_imgs.npy  mnist_train_lbls.npy    train-labels-idx1-ubyte
+mnist_test_lbls.npy  t10k-images-idx3-ubyte
+</code></pre><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># Loading the csv files for use</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#555>pandas</span> <span style=color:#000;font-weight:700>as</span> <span style=color:#555>pd</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>train_df <span style=color:#000;font-weight:700>=</span> pd<span style=color:#000;font-weight:700>.</span>read_csv(<span style=color:#d14>&#39;/content/data/mnist_train.csv&#39;</span>, index_col<span style=color:#000;font-weight:700>=</span><span style=color:#000;font-weight:700>False</span>)
+</span></span><span style=display:flex><span>test_df <span style=color:#000;font-weight:700>=</span> pd<span style=color:#000;font-weight:700>.</span>read_csv(<span style=color:#d14>&#39;/content/data/mnist_test.csv&#39;</span>, index_col<span style=color:#000;font-weight:700>=</span><span style=color:#000;font-weight:700>False</span>)
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>train_df<span style=color:#000;font-weight:700>.</span>shape
+</span></span></code></pre></div><pre><code>(59999, 785)
+</code></pre><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>test_df<span style=color:#000;font-weight:700>.</span>shape
+</span></span></code></pre></div><pre><code>(9999, 785)
+</code></pre><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>train_df<span style=color:#000;font-weight:700>.</span>head()
+</span></span></code></pre></div><div><style scoped>.dataframe tbody tr th:only-of-type{vertical-align:middle}<pre><code>.dataframe tbody tr th{vertical-align:top}.dataframe thead th{text-align:right}</code></pre><p></style></p><table border=1 class=dataframe><thead><tr style=text-align:right><th></th><th>5</th><th>0</th><th>0.1</th><th>0.2</th><th>0.3</th><th>0.4</th><th>0.5</th><th>0.6</th><th>0.7</th><th>0.8</th><th>...</th><th>0.608</th><th>0.609</th><th>0.610</th><th>0.611</th><th>0.612</th><th>0.613</th><th>0.614</th><th>0.615</th><th>0.616</th><th>0.617</th></tr></thead><tbody><tr><th>0</th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th>1</th><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th>2</th><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th>3</th><td>9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th>4</th><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody></table><p>5 rows × 785 columns</p></div><p>As we can see that the first column is the class value and we have to seperate it, so lets do that</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>train <span style=color:#000;font-weight:700>=</span> train_df<span style=color:#000;font-weight:700>.</span>values
+</span></span><span style=display:flex><span>trainSet <span style=color:#000;font-weight:700>=</span> train[:,<span style=color:#099>1</span>:]
+</span></span><span style=display:flex><span>trainLabel <span style=color:#000;font-weight:700>=</span> train[:,:<span style=color:#099>1</span>]
+</span></span><span style=display:flex><span>test <span style=color:#000;font-weight:700>=</span> test_df<span style=color:#000;font-weight:700>.</span>values
+</span></span><span style=display:flex><span>testSet <span style=color:#000;font-weight:700>=</span> test[:,<span style=color:#099>1</span>:]
+</span></span><span style=display:flex><span>testLabel <span style=color:#000;font-weight:700>=</span> test[:,:<span style=color:#099>1</span>]
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># checking the shape again</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>print</span>(trainSet<span style=color:#000;font-weight:700>.</span>shape, trainLabel<span style=color:#000;font-weight:700>.</span>shape, testSet<span style=color:#000;font-weight:700>.</span>shape, testLabel<span style=color:#000;font-weight:700>.</span>shape)
+</span></span></code></pre></div><pre><code>(59999, 784) (59999, 1) (9999, 784) (9999, 1)
+</code></pre><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># The labels are not useful as they are categorical hence we need to encode them</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>from</span> <span style=color:#555>sklearn.preprocessing</span> <span style=color:#000;font-weight:700>import</span> OneHotEncoder
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#555>numpy</span> <span style=color:#000;font-weight:700>as</span> <span style=color:#555>np</span>
+</span></span><span style=display:flex><span>le <span style=color:#000;font-weight:700>=</span> OneHotEncoder(handle_unknown<span style=color:#000;font-weight:700>=</span><span style=color:#d14>&#39;ignore&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>le<span style=color:#000;font-weight:700>.</span>fit(np<span style=color:#000;font-weight:700>.</span>vstack((train[:,:<span style=color:#099>1</span>],testSet[:,:<span style=color:#099>1</span>])))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>trainLabels <span style=color:#000;font-weight:700>=</span> le<span style=color:#000;font-weight:700>.</span>transform(trainLabel)<span style=color:#000;font-weight:700>.</span>toarray()
+</span></span><span style=display:flex><span>testLabels <span style=color:#000;font-weight:700>=</span> le<span style=color:#000;font-weight:700>.</span>transform(testLabel)<span style=color:#000;font-weight:700>.</span>toarray()
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>testLabels[<span style=color:#099>1</span>]
+</span></span></code></pre></div><pre><code>array([0., 1., 0., 0., 0., 0., 0., 0., 0., 0.])
+</code></pre><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>testLabels<span style=color:#000;font-weight:700>.</span>shape
+</span></span></code></pre></div><pre><code>(9999, 10)
+</code></pre><p>There are here so lets not worry about this too much and proceed with building the model. The first thing I will do is define my <em>placeholders</em>.
+So <em>Placeholders</em>, think of them as containers, they will be used to hold data in them. They are <em>variables</em>. So when we create a <em>graph</em> in tensorflow we need to feed them data and we can not do this directly and hence we need some container to hold the data and these containers in tensorflow are called as <em><strong>Placeholder</strong></em></p><h3 id=about-the-dataset>About the Dataset:</h3><p>MNIST data set is set of handwritten digits, which are 28 x 28 pixles, in the conversion script, what we have done is we have got the values of intensity of the each pixle. So the total input is 784, hence the shape in the palce holder will be <code>[None, 784]</code>, Here the <strong>None</strong> signifies the amount of data being feed and that will be decided while creating the network, for example: every dataset is of different length and when we define the batch size say in MNIST to 100 than it will create 600 batches(60000 training examples divided by 100) but if the batch size is different, its going to be because of hardware restrictions then the length of last batch might not be the same with every other batch and that makes putting anything in place of <em>None</em> &ldquo;foolish&rdquo;, so we dont need to worry about that now. In the second palceholder <em>y</em> we will have shape <code>[None, 10]</code>, 10 here represents the number of classes that we are classifing the data into.</p><h3 id=why-should-one-not-initialize-the-weights-with-0>Why should one not initialize the weights with 0?</h3><p>It is really not a good idea to initialize the weights with <em>0</em> because all the neurons will calculate the same thing. Do we need it? No because if we would want every neuron to calculate same value than why do we need those deep networks, we can have just one neuron or one layer and do that, we don&rsquo;t need the deep neural networks.</p><blockquote><p>NOTE: It is not necessary to initialize the baises randomly.</p></blockquote><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># Placeholders</span>
+</span></span><span style=display:flex><span>X <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>placeholder(<span style=color:#d14>&#39;float&#39;</span>, [<span style=color:#000;font-weight:700>None</span>,<span style=color:#099>784</span>]) <span style=color:#998;font-style:italic># Placeholder for inputing the data into the network.</span>
+</span></span><span style=display:flex><span>Y <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>placeholder(<span style=color:#d14>&#39;float&#39;</span>, [<span style=color:#000;font-weight:700>None</span>, <span style=color:#099>10</span>]) <span style=color:#998;font-style:italic># Placeholder for output layer.</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># Now defining the weights and baises. The input layer have no weight and no baise, </span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># and as I am creating a network with two hidden layer I will create weight and bais for hidden layer and output layer</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># These weight are 2D arrays and baises are 1D arrays</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>hidden_1_Weight <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>Variable(tf<span style=color:#000;font-weight:700>.</span>random_uniform([<span style=color:#099>784</span>, <span style=color:#099>256</span>]))  <span style=color:#998;font-style:italic># here we need to define what input this layer will be getting and what will be its output(This output is actually the number of hidden units this layer will have)</span>
+</span></span><span style=display:flex><span>hidden_2_Weight <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>Variable(tf<span style=color:#000;font-weight:700>.</span>random_uniform([<span style=color:#099>256</span>, <span style=color:#099>256</span>]))
+</span></span><span style=display:flex><span>outputWeight <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>Variable(tf<span style=color:#000;font-weight:700>.</span>random_uniform([<span style=color:#099>256</span>, <span style=color:#099>10</span>]))   <span style=color:#998;font-style:italic># here the input to this layer will be the output of previous layer i.e. 256 and its output will be number of classes it will predict i.e. 10</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># biases</span>
+</span></span><span style=display:flex><span>hidden_1_Bias <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>Variable(tf<span style=color:#000;font-weight:700>.</span>random_uniform([<span style=color:#099>256</span>]))
+</span></span><span style=display:flex><span>hidden_2_Bias <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>Variable(tf<span style=color:#000;font-weight:700>.</span>random_uniform([<span style=color:#099>256</span>]))
+</span></span><span style=display:flex><span>outputBias <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>Variable(tf<span style=color:#000;font-weight:700>.</span>random_uniform([<span style=color:#099>10</span>]))
+</span></span></code></pre></div><p><img src=https://upload.wikimedia.org/wikipedia/commons/8/8c/Perceptron_moj.png alt=Perceptron></p><p>By Mayranna [CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)], from Wikimedia Commons</p><p>So in our case the first layer will calculate</p><p>$layer 1 = sigmoid((x * h_{1}) + b_{1})$</p><p>for layer 2</p><p>$layer 2 = sigmoid((x * h_{2}) + b_{2})$</p><p>For the ouput layer I must add softmax activation to get the probabilities, but tensorflow has made it easy in such a way that when we calculate the loss we can do that.</p><p>If we don&rsquo;t want to do it for some reason we can add softmax here in the network defination and then just calculate loss in the loss function without applying softmax there a simple <code>cross_entropy</code> from tenosrflow can do that job.</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># Lets define the function for multilayer </span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>def</span> <span style=color:#900;font-weight:700>perceptron</span>(x):
+</span></span><span style=display:flex><span>     <span style=color:#998;font-style:italic># Hidden fully connected layer with 128 neurons</span>
+</span></span><span style=display:flex><span>    layer_1 <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>nn<span style=color:#000;font-weight:700>.</span>relu(tf<span style=color:#000;font-weight:700>.</span>add(tf<span style=color:#000;font-weight:700>.</span>matmul(x, hidden_1_Weight), hidden_1_Bias))
+</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic># Hidden fully connected layer with 128 neurons</span>
+</span></span><span style=display:flex><span>    layer_2 <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>nn<span style=color:#000;font-weight:700>.</span>relu(tf<span style=color:#000;font-weight:700>.</span>add(tf<span style=color:#000;font-weight:700>.</span>matmul(layer_1, hidden_2_Weight), hidden_2_Bias))
+</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic># Output fully connected layer with a neuron for each class</span>
+</span></span><span style=display:flex><span>    out_layer <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>matmul(layer_2, outputWeight) <span style=color:#000;font-weight:700>+</span> outputBias
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>return</span> out_layer
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># build the network</span>
+</span></span><span style=display:flex><span>preceptron_ <span style=color:#000;font-weight:700>=</span> perceptron(X)
+</span></span></code></pre></div><p>Loss function minimizes the error between the classification and the original label.
+I am using here, <code>softmax_cross_entropy_with_logits</code> which is</p><p>$cross entropy = - \sum_{1}^{N} y_{o,c} Log(p,c)$</p><p>where,</p><p>N: total number of classes</p><p>y: if the classification is correct, i.e. class label <em>c</em> belongs to the observation <em>o</em></p><p>p: predicted probability of observation <em>o</em> belongs to class <em>c</em></p><p>So, <code>softmax_cross_entropy_with_logits</code> will be</p><p>$softmax crossentropy with logits = softmax(- \sum_{1}^{N} y_{o,c} Log(p,c))$</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># Define loss and optimizer</span>
+</span></span><span style=display:flex><span>loss_op <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>reduce_mean(tf<span style=color:#000;font-weight:700>.</span>nn<span style=color:#000;font-weight:700>.</span>softmax_cross_entropy_with_logits(logits<span style=color:#000;font-weight:700>=</span>preceptron_, labels<span style=color:#000;font-weight:700>=</span>Y)) 
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>optimizer <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>train<span style=color:#000;font-weight:700>.</span>AdamOptimizer(learning_rate<span style=color:#000;font-weight:700>=</span><span style=color:#099>0.001</span>) <span style=color:#998;font-style:italic># I am using AdamOprimizer optimizer as I think it works better in most of the cases, it comes from my personal experience.</span>
+</span></span><span style=display:flex><span>train_op <span style=color:#000;font-weight:700>=</span> optimizer<span style=color:#000;font-weight:700>.</span>minimize(loss_op)
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># Initializing the variables</span>
+</span></span><span style=display:flex><span>init <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>global_variables_initializer()
+</span></span></code></pre></div><p>Now as all the variables are initialized we can move to create batches to feed to our network</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#000;font-weight:700>def</span> <span style=color:#900;font-weight:700>batches</span>(data, label,batch_size):
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>for</span> i <span style=color:#000;font-weight:700>in</span> <span style=color:#0086b3>range</span>(<span style=color:#099>0</span>,data<span style=color:#000;font-weight:700>.</span>shape[<span style=color:#099>0</span>],batch_size):
+</span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>yield</span> [data[i:i<span style=color:#000;font-weight:700>+</span>batch_size], label[i:i<span style=color:#000;font-weight:700>+</span>batch_size]]
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>batch_size <span style=color:#000;font-weight:700>=</span> <span style=color:#099>100</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#998;font-style:italic># Launch the graph</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>with</span> tf<span style=color:#000;font-weight:700>.</span>Session() <span style=color:#000;font-weight:700>as</span> sess:
+</span></span><span style=display:flex><span>    sess<span style=color:#000;font-weight:700>.</span>run(init)
+</span></span><span style=display:flex><span>    total_batches <span style=color:#000;font-weight:700>=</span> <span style=color:#0086b3>len</span>(train)<span style=color:#000;font-weight:700>//</span>batch_size
+</span></span><span style=display:flex><span>    <span style=color:#0086b3>print</span>(total_batches)
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>for</span> epoch <span style=color:#000;font-weight:700>in</span> <span style=color:#0086b3>range</span>(<span style=color:#099>200</span>):
+</span></span><span style=display:flex><span>        avg_cost <span style=color:#000;font-weight:700>=</span> <span style=color:#099>0</span>
+</span></span><span style=display:flex><span>        batchedData  <span style=color:#000;font-weight:700>=</span> batches(trainSet,trainLabels,batch_size)
+</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic># Loop over all batches</span>
+</span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>for</span> batch_data <span style=color:#000;font-weight:700>in</span> batchedData:
+</span></span><span style=display:flex><span>            trainSetBatch <span style=color:#000;font-weight:700>=</span> batch_data[<span style=color:#099>0</span>]
+</span></span><span style=display:flex><span>            trainLabelBatch <span style=color:#000;font-weight:700>=</span> batch_data[<span style=color:#099>1</span>]
+</span></span><span style=display:flex><span>            _, c <span style=color:#000;font-weight:700>=</span> sess<span style=color:#000;font-weight:700>.</span>run([train_op, loss_op], feed_dict<span style=color:#000;font-weight:700>=</span>{X: trainSetBatch,Y: trainLabelBatch})
+</span></span><span style=display:flex><span>            <span style=color:#998;font-style:italic># Compute average loss</span>
+</span></span><span style=display:flex><span>            avg_cost <span style=color:#000;font-weight:700>+=</span> c <span style=color:#000;font-weight:700>/</span> total_batches
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic># Display logs per epoch step</span>
+</span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>if</span> epoch <span style=color:#000;font-weight:700>%</span> <span style=color:#099>1</span> <span style=color:#000;font-weight:700>==</span> <span style=color:#099>0</span>:
+</span></span><span style=display:flex><span>            <span style=color:#0086b3>print</span>(<span style=color:#d14>&#34;Epoch:&#34;</span>, <span style=color:#d14>&#39;</span><span style=color:#d14>%04d</span><span style=color:#d14>&#39;</span> <span style=color:#000;font-weight:700>%</span> (epoch<span style=color:#000;font-weight:700>+</span><span style=color:#099>1</span>), <span style=color:#d14>&#34;cost=&#34;</span>, \
+</span></span><span style=display:flex><span>                <span style=color:#d14>&#34;</span><span style=color:#d14>{:.9f}</span><span style=color:#d14>&#34;</span><span style=color:#000;font-weight:700>.</span>format(avg_cost))
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#0086b3>print</span>(<span style=color:#d14>&#34;Optimization Finished!&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic># Test model</span>
+</span></span><span style=display:flex><span>    pred <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>nn<span style=color:#000;font-weight:700>.</span>softmax(preceptron_)  <span style=color:#998;font-style:italic># Apply softmax to logits</span>
+</span></span><span style=display:flex><span>    correct_prediction <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>equal(tf<span style=color:#000;font-weight:700>.</span>argmax(pred, <span style=color:#099>1</span>), tf<span style=color:#000;font-weight:700>.</span>argmax(Y, <span style=color:#099>1</span>))
+</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic># Calculate accuracy</span>
+</span></span><span style=display:flex><span>    accuracy <span style=color:#000;font-weight:700>=</span> tf<span style=color:#000;font-weight:700>.</span>reduce_mean(tf<span style=color:#000;font-weight:700>.</span>cast(correct_prediction, <span style=color:#d14>&#34;float&#34;</span>))
+</span></span><span style=display:flex><span>    <span style=color:#0086b3>print</span>(<span style=color:#d14>&#34;Accuracy:&#34;</span>, accuracy<span style=color:#000;font-weight:700>.</span>eval({X: testSet, Y: testLabels}))
+</span></span></code></pre></div><pre><code>599
+Epoch: 0001 cost= 233697.866718579
+Epoch: 0002 cost= 13862.419193223
+Epoch: 0003 cost= 15239.867756075
+Epoch: 0004 cost= 14801.515713954
+Epoch: 0005 cost= 13218.383375674
+Epoch: 0006 cost= 15048.362955593
+Epoch: 0007 cost= 15605.303243443
+Epoch: 0008 cost= 14244.286502895
+Epoch: 0009 cost= 14137.246602818
+Epoch: 0010 cost= 13643.962565580
+Epoch: 0011 cost= 14308.345506671
+Epoch: 0012 cost= 13012.518639057
+Epoch: 0013 cost= 12799.497285821
+Epoch: 0014 cost= 13468.869916250
+Epoch: 0015 cost= 11905.231280484
+Epoch: 0016 cost= 11331.125025601
+Epoch: 0017 cost= 10646.379243625
+Epoch: 0018 cost= 9626.861044366
+Epoch: 0019 cost= 9001.553334091
+Epoch: 0020 cost= 7626.579372336
+Epoch: 0021 cost= 6334.278111014
+Epoch: 0022 cost= 5293.664380053
+Epoch: 0023 cost= 3738.413927234
+Epoch: 0024 cost= 2760.077281130
+Epoch: 0025 cost= 2006.898739831
+Epoch: 0026 cost= 1393.388739605
+Epoch: 0027 cost= 1061.398122862
+Epoch: 0028 cost= 720.131391260
+Epoch: 0029 cost= 528.895305433
+Epoch: 0030 cost= 371.910963326
+Epoch: 0031 cost= 289.990093832
+Epoch: 0032 cost= 211.158631602
+Epoch: 0033 cost= 141.923613281
+Epoch: 0034 cost= 112.115534271
+Epoch: 0035 cost= 90.701224615
+Epoch: 0036 cost= 94.358168000
+Epoch: 0037 cost= 61.984902694
+Epoch: 0038 cost= 60.687041363
+Epoch: 0039 cost= 42.428540849
+Epoch: 0040 cost= 45.945703943
+Epoch: 0041 cost= 35.301657116
+Epoch: 0042 cost= 33.531888366
+Epoch: 0043 cost= 24.714800139
+Epoch: 0044 cost= 26.019582580
+Epoch: 0045 cost= 17.728049701
+Epoch: 0046 cost= 17.548398735
+Epoch: 0047 cost= 39.107907718
+Epoch: 0048 cost= 21.521840305
+Epoch: 0049 cost= 8.725962788
+Epoch: 0050 cost= 9.524569323
+Epoch: 0051 cost= 5.639854976
+Epoch: 0052 cost= 13.697699557
+Epoch: 0053 cost= 28.470761760
+Epoch: 0054 cost= 11.467136455
+Epoch: 0055 cost= 10.369889293
+Epoch: 0056 cost= 7.239818920
+Epoch: 0057 cost= 11.569948143
+Epoch: 0058 cost= 11.443468886
+Epoch: 0059 cost= 8.718404733
+Epoch: 0060 cost= 13.267106948
+Epoch: 0061 cost= 9.522318864
+Epoch: 0062 cost= 7.704388247
+Epoch: 0063 cost= 6.505781692
+Epoch: 0064 cost= 4.287839644
+Epoch: 0065 cost= 4.067495077
+Epoch: 0066 cost= 5.511625610
+Epoch: 0067 cost= 9.277953480
+Epoch: 0068 cost= 5.771217371
+Epoch: 0069 cost= 7.822138380
+Epoch: 0070 cost= 5.067580908
+Epoch: 0071 cost= 3.542238488
+Epoch: 0072 cost= 2.314385025
+Epoch: 0073 cost= 4.829883155
+Epoch: 0074 cost= 6.732986233
+Epoch: 0075 cost= 4.147152578
+Epoch: 0076 cost= 4.814162664
+Epoch: 0077 cost= 4.195318871
+Epoch: 0078 cost= 4.816954190
+Epoch: 0079 cost= 6.405923215
+Epoch: 0080 cost= 3.548350426
+Epoch: 0081 cost= 6.843513339
+Epoch: 0082 cost= 3.730189537
+Epoch: 0083 cost= 2.395861579
+Epoch: 0084 cost= 1.291224121
+Epoch: 0085 cost= 2.609014182
+Epoch: 0086 cost= 8.136346506
+Epoch: 0087 cost= 6.911538018
+Epoch: 0088 cost= 1.613900936
+Epoch: 0089 cost= 1.792066425
+Epoch: 0090 cost= 1.509146715
+Epoch: 0091 cost= 2.816762689
+Epoch: 0092 cost= 5.840670672
+Epoch: 0093 cost= 4.645757224
+Epoch: 0094 cost= 2.435126027
+Epoch: 0095 cost= 8.339016823
+Epoch: 0096 cost= 1.770155966
+Epoch: 0097 cost= 1.422567249
+Epoch: 0098 cost= 1.212486510
+Epoch: 0099 cost= 1.109428637
+Epoch: 0100 cost= 3.898369765
+Epoch: 0101 cost= 3.376135472
+Epoch: 0102 cost= 4.315077318
+Epoch: 0103 cost= 4.274662701
+Epoch: 0104 cost= 3.012072559
+Epoch: 0105 cost= 1.683379329
+Epoch: 0106 cost= 1.264098068
+Epoch: 0107 cost= 1.163033118
+Epoch: 0108 cost= 1.178344884
+Epoch: 0109 cost= 3.371009719
+Epoch: 0110 cost= 2.942797631
+Epoch: 0111 cost= 1.653774604
+Epoch: 0112 cost= 2.065821347
+Epoch: 0113 cost= 9.031573909
+Epoch: 0114 cost= 2.762784667
+Epoch: 0115 cost= 3.431726249
+Epoch: 0116 cost= 1.516621503
+Epoch: 0117 cost= 1.402665269
+Epoch: 0118 cost= 3.369300493
+Epoch: 0119 cost= 1.436823709
+Epoch: 0120 cost= 0.989465624
+Epoch: 0121 cost= 1.465438136
+Epoch: 0122 cost= 2.069973967
+Epoch: 0123 cost= 1.271443909
+Epoch: 0124 cost= 1.228639121
+Epoch: 0125 cost= 3.035652603
+Epoch: 0126 cost= 4.367832982
+Epoch: 0127 cost= 1.883182552
+Epoch: 0128 cost= 0.988018134
+Epoch: 0129 cost= 1.219982436
+Epoch: 0130 cost= 2.460366394
+Epoch: 0131 cost= 1.444995319
+Epoch: 0132 cost= 0.796145169
+Epoch: 0133 cost= 1.866650649
+Epoch: 0134 cost= 2.729383657
+Epoch: 0135 cost= 1.498433346
+Epoch: 0136 cost= 0.894979498
+Epoch: 0137 cost= 0.685542778
+Epoch: 0138 cost= 1.086774313
+Epoch: 0139 cost= 1.573417341
+Epoch: 0140 cost= 1.511079420
+Epoch: 0141 cost= 3.592942662
+Epoch: 0142 cost= 1.756971295
+Epoch: 0143 cost= 2.371372009
+Epoch: 0144 cost= 1.350900717
+Epoch: 0145 cost= 3.918655687
+Epoch: 0146 cost= 1.380350943
+Epoch: 0147 cost= 1.348579527
+Epoch: 0148 cost= 1.050694610
+Epoch: 0149 cost= 0.912132167
+Epoch: 0150 cost= 0.782553376
+Epoch: 0151 cost= 0.597382387
+Epoch: 0152 cost= 0.594046318
+Epoch: 0153 cost= 0.592238037
+Epoch: 0154 cost= 0.592521275
+Epoch: 0155 cost= 0.594104953
+Epoch: 0156 cost= 0.589922921
+Epoch: 0157 cost= 0.703515567
+Epoch: 0158 cost= 4.097817484
+Epoch: 0159 cost= 3.709944400
+Epoch: 0160 cost= 3.080095094
+Epoch: 0161 cost= 1.277377238
+Epoch: 0162 cost= 0.838328730
+Epoch: 0163 cost= 0.941523782
+Epoch: 0164 cost= 1.633839919
+Epoch: 0165 cost= 1.591967852
+Epoch: 0166 cost= 0.826101982
+Epoch: 0167 cost= 0.960754743
+Epoch: 0168 cost= 0.991728673
+Epoch: 0169 cost= 1.230600796
+Epoch: 0170 cost= 1.051815032
+Epoch: 0171 cost= 1.671720224
+Epoch: 0172 cost= 1.550530605
+Epoch: 0173 cost= 0.948061457
+Epoch: 0174 cost= 0.775590160
+Epoch: 0175 cost= 0.687840205
+Epoch: 0176 cost= 0.688999365
+Epoch: 0177 cost= 1.429095754
+Epoch: 0178 cost= 3.105333766
+Epoch: 0179 cost= 1.452365677
+Epoch: 0180 cost= 1.176313281
+Epoch: 0181 cost= 0.766753364
+Epoch: 0182 cost= 3.400296347
+Epoch: 0183 cost= 1.933165025
+Epoch: 0184 cost= 1.105114213
+Epoch: 0185 cost= 1.771966526
+Epoch: 0186 cost= 2.085469130
+Epoch: 0187 cost= 0.894252141
+Epoch: 0188 cost= 1.149476664
+Epoch: 0189 cost= 0.906636394
+Epoch: 0190 cost= 1.220944617
+Epoch: 0191 cost= 0.875083064
+Epoch: 0192 cost= 1.119831198
+Epoch: 0193 cost= 0.861701711
+Epoch: 0194 cost= 0.755726190
+Epoch: 0195 cost= 1.848937889
+Epoch: 0196 cost= 1.442416712
+Epoch: 0197 cost= 5.017063204
+Epoch: 0198 cost= 0.906185662
+Epoch: 0199 cost= 1.311479466
+Epoch: 0200 cost= 0.750225017
+Optimization Finished!
+Accuracy: 0.7509751
+</code></pre></div></article><button class=floating-button>
+<a class=floating-button__link href=https://jdvala.github.io><span>home</span></a></button></div><footer class=post-footer><div class=footer><div>© 2020, Jay Vala. Theme - Origin by Andrey Parfenov</div><div class=footer__socials><a href=www.github.com/jdvala target=_blank class=social-link title="Github link" rel=noopener aria-label="follow on Github——Opens in a new window"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0v24h24V0H0zm14.534 19.59c-.406.078-.534-.171-.534-.384v-2.195c0-.747-.262-1.233-.55-1.481 1.782-.198 3.654-.875 3.654-3.947.0-.874-.311-1.588-.824-2.147.083-.202.357-1.016-.079-2.117.0.0-.671-.215-2.198.82-.639-.18-1.323-.267-2.003-.271-.68.003-1.364.091-2.003.269-1.528-1.035-2.2-.82-2.2-.82-.434 1.102-.16 1.915-.077 2.118-.512.56-.824 1.273-.824 2.147.0 3.064 1.867 3.751 3.645 3.954-.229.2-.436.552-.508 1.07-.457.204-1.614.557-2.328-.666.0.0-.423-.768-1.227-.825.0.0-.78-.01-.055.487.0.0.525.246.889 1.17.0.0.463 1.428 2.688.944v1.489c0 .211-.129.459-.528.385C6.292 18.533 4 15.534 4 12c0-4.419 3.582-8 8-8s8 3.581 8 8c0 3.533-2.289 6.531-5.466 7.59z"/></svg></a></div></div></footer><script src=https://jdvala.github.io/js/script.js></script></body></html>
