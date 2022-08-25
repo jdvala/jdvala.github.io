@@ -30,5 +30,5 @@ jobs:
           #   keep_files: true
           user_name: jdvala
           user_email: jay.vala@msn.com
-          publish_branch: master
+          publish_branch: main
           cname: www.jayvala.in
